@@ -1,0 +1,13 @@
+﻿<se:StswApp x:Class="StswTxtJoiner.App"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:local="clr-namespace:StswTxtJoiner"
+            xmlns:se="clr-namespace:StswExpress.Wpf;assembly=StswExpress.Wpf">
+    <se:StswApp.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/StswExpress.Wpf;component/StswResources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </se:StswApp.Resources>
+</se:StswApp>
