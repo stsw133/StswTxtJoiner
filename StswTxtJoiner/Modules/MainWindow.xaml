@@ -31,8 +31,8 @@
 				<se:StswGroupBox.Header>
 					<DockPanel>
 						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding ConvertFilesCommand}" IconData="{x:Static se:StswIcons.Play}" IconFill="{DynamicResource StswColor.Modify}"/>
+						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding AddFilesCommand}" IconData="{x:Static se:StswIcons.Plus}" IconFill="{DynamicResource StswColor.Positive}"/>
 						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding ClearFilesCommand}" IconData="{x:Static se:StswIcons.Broom}" IconFill="{DynamicResource StswColor.Negative}"/>
-						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding AddFilesCommand}" IconData="{x:Static se:StswIcons.FilePlus}" IconFill="{DynamicResource StswColor.Positive}"/>
 						<se:StswLabel Content="File list" IconData="{x:Static se:StswIcons.File}"/>
 					</DockPanel>
 				</se:StswGroupBox.Header>
@@ -81,8 +81,8 @@
 		<se:StswGroupBox Grid.Column="2" BorderThickness="0 1 0 0" CornerClipping="False" CornerRadius="0">
 			<se:StswGroupBox.Header>
 				<DockPanel>
-					<se:StswSubButton DockPanel.Dock="Right" Command="{Binding SaveOutputCommand}" IconData="{x:Static se:StswIcons.ContentSave}" IconFill="{DynamicResource StswColor.Positive}"/>
-					<se:StswSubButton DockPanel.Dock="Right" Command="{Binding CopyOutputCommand}" IconData="{x:Static se:StswIcons.ContentCopy}" IconFill="{DynamicResource StswColor.Modify}"/>
+					<se:StswSubButton DockPanel.Dock="Right" Command="{Binding SaveOutputCommand}" IconData="{x:Static se:StswIcons.ContentSave}" IconFill="{DynamicResource StswColor.Modify}"/>
+					<se:StswSubButton DockPanel.Dock="Right" Command="{Binding CopyOutputCommand}" IconData="{x:Static se:StswIcons.ContentCopy}" IconFill="{DynamicResource StswColor.Neutral}"/>
 					<se:StswSubCheck DockPanel.Dock="Right" IsChecked="{Binding IsOutputReadOnly}" IconChecked="{x:Static se:StswIcons.CheckboxBlankOutline}" IconUnchecked="{x:Static se:StswIcons.CheckboxMarkedOutline}"/>
 					<se:StswLabel Content="Output" IconData="{x:Static se:StswIcons.Console}"/>
 				</DockPanel>
