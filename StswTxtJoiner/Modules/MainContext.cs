@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Windows;
 
 namespace StswTxtJoiner;
 
@@ -22,7 +23,33 @@ public partial class MainContext : StswObservableObject
 		if (dialog.ShowDialog() != true)
 			return;
 
-		foreach (var fileName in dialog.FileNames)
+		AddFilesToList(dialog.FileNames);
+	}
+
+	[StswCommand]
+	void DragFilesOver(DragEventArgs eventArgs)
+	{
+		var containsFiles = eventArgs.Data.GetDataPresent(DataFormats.FileDrop);
+		eventArgs.Effects = containsFiles ? DragDropEffects.Copy : DragDropEffects.None;
+		eventArgs.Handled = true;
+	}
+
+	[StswCommand]
+	void DropFiles(DragEventArgs eventArgs)
+	{
+		if (!eventArgs.Data.GetDataPresent(DataFormats.FileDrop))
+			return;
+
+		if (eventArgs.Data.GetData(DataFormats.FileDrop) is string[] fileNames)
+			AddFilesToList(fileNames);
+
+		eventArgs.Handled = true;
+	}
+
+	void AddFilesToList(IEnumerable<string> fileNames)
+	{
+		foreach (var fileName in fileNames.Where(File.Exists))
+
 		{
 			var fileInfo = new FileInfoModel
 			{
