@@ -11,6 +11,7 @@ public partial class MainContext : StswObservableObject
 	[StswObservableProperty] FileInfoModel? _selectedFileInfo;
 	[StswObservableProperty] string _separatorText = string.Empty;
 	[StswObservableProperty] string _outputText = string.Empty;
+	[StswObservableProperty] bool _isOutputReadOnly = true;
 
 	[StswCommand]
 	void AddFiles()
@@ -18,7 +19,7 @@ public partial class MainContext : StswObservableObject
 		var dialog = new OpenFileDialog
 		{
 			Multiselect = true,
-			Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"
+			Filter = "All files (*.*)|*.*"
 		};
 		if (dialog.ShowDialog() != true)
 			return;
@@ -74,9 +75,35 @@ public partial class MainContext : StswObservableObject
 	}
 
 	[StswCommand]
+	void ClearSeparator()
+	{
+		SeparatorText = string.Empty;
+	}
+
+	[StswCommand]
 	void ConvertFiles()
 	{
 		var fileContents = FileList.Select(f => File.ReadAllText(f.FilePath));
 		OutputText = string.Join(SeparatorText, fileContents);
+	}
+
+	[StswCommand]
+	void CopyOutput()
+	{
+		Clipboard.SetText(OutputText);
+	}
+
+	[StswCommand]
+	void SaveOutput()
+	{
+		var dialog = new SaveFileDialog
+		{
+			DefaultExt = ".txt",
+			Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"
+		};
+		if (dialog.ShowDialog() != true)
+			return;
+
+		File.WriteAllText(dialog.FileName, OutputText);
 	}
 }

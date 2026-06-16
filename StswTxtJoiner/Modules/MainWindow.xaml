@@ -58,7 +58,10 @@
 			<!-- separator -->
 			<se:StswGroupBox Grid.Row="2" BorderThickness="0 1 0 0" CornerClipping="False" CornerRadius="0">
 				<se:StswGroupBox.Header>
-					<se:StswLabel Content="Separator" IconData="{x:Static se:StswIcons.ArrowSplitHorizontal}"/>
+					<DockPanel>
+						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding ClearSeparatorCommand}" IconData="{x:Static se:StswIcons.Broom}" IconFill="{DynamicResource StswColor.Negative}"/>
+						<se:StswLabel Content="Separator" IconData="{x:Static se:StswIcons.ArrowSplitHorizontal}"/>
+					</DockPanel>
 				</se:StswGroupBox.Header>
 
 				<se:StswTextBox se:StswControl.IsBorderless="True"
@@ -77,11 +80,17 @@
 		<!-- output -->
 		<se:StswGroupBox Grid.Column="2" BorderThickness="0 1 0 0" CornerClipping="False" CornerRadius="0">
 			<se:StswGroupBox.Header>
-				<se:StswLabel Content="Output" IconData="{x:Static se:StswIcons.Console}"/>
+				<DockPanel>
+					<se:StswSubButton DockPanel.Dock="Right" Command="{Binding SaveOutputCommand}" IconData="{x:Static se:StswIcons.ContentSave}" IconFill="{DynamicResource StswColor.Positive}"/>
+					<se:StswSubButton DockPanel.Dock="Right" Command="{Binding CopyOutputCommand}" IconData="{x:Static se:StswIcons.ContentCopy}" IconFill="{DynamicResource StswColor.Modify}"/>
+					<se:StswSubCheck DockPanel.Dock="Right" IsChecked="{Binding IsOutputReadOnly}" IconChecked="{x:Static se:StswIcons.CheckboxBlankOutline}" IconUnchecked="{x:Static se:StswIcons.CheckboxMarkedOutline}"/>
+					<se:StswLabel Content="Output" IconData="{x:Static se:StswIcons.Console}"/>
+				</DockPanel>
 			</se:StswGroupBox.Header>
 
 			<se:StswTextBox se:StswControl.IsBorderless="True"
 							AcceptsReturn="True" AcceptsTab="True"
+							IsReadOnly="{Binding IsOutputReadOnly}"
 							Text="{Binding OutputText}"
 							HorizontalAlignment="Stretch"
 							HorizontalContentAlignment="Stretch"
