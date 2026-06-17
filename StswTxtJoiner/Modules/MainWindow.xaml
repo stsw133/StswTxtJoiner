@@ -33,6 +33,22 @@
 						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding ConvertFilesCommand}" IconData="{x:Static se:StswIcons.Play}" IconFill="{DynamicResource StswColor.Modify}"/>
 						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding AddFilesCommand}" IconData="{x:Static se:StswIcons.Plus}" IconFill="{DynamicResource StswColor.Positive}"/>
 						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding ClearFilesCommand}" IconData="{x:Static se:StswIcons.Broom}" IconFill="{DynamicResource StswColor.Negative}"/>
+						<se:StswSubDrop DockPanel.Dock="Right" IconData="{x:Static se:StswIcons.Filter}" IconFill="{DynamicResource StswColor.Neutral}">
+							<StackPanel MinWidth="220" Margin="8">
+								<StackPanel Orientation="Horizontal" Margin="0 0 0 6">
+									<se:StswRadioBox Content="Only" IsChecked="{Binding IsOnlyFilterMode}"/>
+									<se:StswRadioBox Content="Excluded" IsChecked="{Binding IsExcludedFilterMode}" Margin="12 0 0 0"/>
+								</StackPanel>
+								<se:StswTextBox se:StswControl.IsBorderless="True"
+												AcceptsReturn="True"
+												Text="{Binding OnlyFilterExtensions}"
+												Visibility="{Binding IsOnlyFilterMode}"/>
+								<se:StswTextBox se:StswControl.IsBorderless="True"
+												AcceptsReturn="True"
+												Text="{Binding ExcludedFilterExtensions}"
+												Visibility="{Binding IsExcludedFilterMode}"/>
+							</StackPanel>
+						</se:StswSubDrop>
 						<se:StswLabel Content="File list" IconData="{x:Static se:StswIcons.File}"/>
 					</DockPanel>
 				</se:StswGroupBox.Header>
