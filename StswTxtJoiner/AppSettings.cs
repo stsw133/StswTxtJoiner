@@ -8,12 +8,28 @@ public class AppSettings
 {
 	public const string DefaultOnlyFilterExtensions = ".md, .txt";
 
+	static readonly JsonSerializerOptions JsonOptions = new()
+	{
+		WriteIndented = true,
+		Converters = { new JsonStringEnumConverter() },
+	};
+
 	public string OnlyFilterExtensions { get; set; } = DefaultOnlyFilterExtensions;
 	public string ExcludedFilterExtensions { get; set; } = string.Empty;
 	public FileFilterMode FilterMode { get; set; } = FileFilterMode.Only;
 
+	public static string UserSettingsPath => Path.Combine(
+		Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+		nameof(StswTxtJoiner),
+		"appsettings.json"
+	);
+
 	public static AppSettings Load()
 	{
+		var userSettings = LoadUserSettings();
+		if (userSettings is not null)
+			return userSettings;
+
 		var settings = new AppSettings();
 
 		settings.OnlyFilterExtensions = App.Configuration[nameof(OnlyFilterExtensions)] ?? settings.OnlyFilterExtensions;
@@ -24,9 +40,42 @@ public class AppSettings
 		return settings;
 	}
 
+	static AppSettings? LoadUserSettings()
+	{
+		if (!File.Exists(UserSettingsPath))
+			return null;
+
+		try
+		{
+			return JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(UserSettingsPath), JsonOptions);
+		}
+		catch (JsonException)
+		{
+			return null;
+		}
+		catch (IOException)
+		{
+			return null;
+		}
+		catch (UnauthorizedAccessException)
+		{
+			return null;
+		}
+	}
+
 	public void Save()
 	{
-		var json = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true, Converters = { new JsonStringEnumConverter() } });
-		File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), json);
+		try
+		{
+			Directory.CreateDirectory(Path.GetDirectoryName(UserSettingsPath)!);
+			var json = JsonSerializer.Serialize(this, JsonOptions);
+			File.WriteAllText(UserSettingsPath, json);
+		}
+		catch (IOException)
+		{
+		}
+		catch (UnauthorizedAccessException)
+		{
+		}
 	}
 }
