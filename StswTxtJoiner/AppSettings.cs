@@ -6,7 +6,7 @@ namespace StswTxtJoiner;
 
 public class AppSettings
 {
-	public const string DefaultOnlyFilterExtensions = ".md, .txt";
+	public const string DefaultOnlyFilterExtensions = ".md, .json, .txt";
 
 	static readonly JsonSerializerOptions JsonOptions = new()
 	{

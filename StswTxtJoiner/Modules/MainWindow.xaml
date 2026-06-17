@@ -12,12 +12,14 @@
 		<local:MainContext/>
 	</se:StswWindow.DataContext>
 
-	<Grid>
+	<Grid Margin="0 1 0 0">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*"/>
 			<ColumnDefinition Width="1"/>
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
+
+		<se:StswSeparator Grid.ColumnSpan="3" BorderThickness="1" Margin="0 -1 0 0" VerticalAlignment="Top"/>
 
 		<Grid>
 			<Grid.RowDefinitions>
@@ -27,27 +29,32 @@
 			</Grid.RowDefinitions>
 
 			<!-- file list -->
-			<se:StswGroupBox BorderThickness="0 1 0 0" CornerClipping="False" CornerRadius="0">
+			<se:StswGroupBox se:StswControl.IsBorderless="True" Padding="0" SeparatorThickness="1">
 				<se:StswGroupBox.Header>
-					<DockPanel>
+					<DockPanel Margin="3">
 						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding ConvertFilesCommand}" IconData="{x:Static se:StswIcons.Play}" IconFill="{DynamicResource StswColor.Modify}"/>
 						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding AddFilesCommand}" IconData="{x:Static se:StswIcons.Plus}" IconFill="{DynamicResource StswColor.Positive}"/>
 						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding ClearFilesCommand}" IconData="{x:Static se:StswIcons.Broom}" IconFill="{DynamicResource StswColor.Negative}"/>
 						<se:StswSubDrop DockPanel.Dock="Right" IconData="{x:Static se:StswIcons.Filter}" IconFill="{DynamicResource StswColor.Neutral}">
-							<StackPanel MinWidth="220" Margin="8">
-								<StackPanel Orientation="Horizontal" Margin="0 0 0 6">
-									<se:StswRadioBox Content="Only" IsChecked="{Binding IsOnlyFilterMode}"/>
-									<se:StswRadioBox Content="Excluded" IsChecked="{Binding IsExcludedFilterMode}" Margin="12 0 0 0"/>
-								</StackPanel>
-								<se:StswTextBox se:StswControl.IsBorderless="True"
-												AcceptsReturn="True"
-												Text="{Binding OnlyFilterExtensions}"
-												Visibility="{Binding IsOnlyFilterMode}"/>
-								<se:StswTextBox se:StswControl.IsBorderless="True"
-												AcceptsReturn="True"
-												Text="{Binding ExcludedFilterExtensions}"
-												Visibility="{Binding IsExcludedFilterMode}"/>
+							<StackPanel Margin="3" Orientation="Horizontal">
+								<se:StswRadioBox Content="Only" IconScale="0.75" IsChecked="{Binding IsOnlyFilterMode}" Margin="3"/>
+								<se:StswRadioBox Content="Excluded" IconScale="0.75" IsChecked="{Binding IsExcludedFilterMode}" Margin="3"/>
 							</StackPanel>
+							<se:StswSeparator BorderThickness="1"/>
+							<se:StswTextBox se:StswControl.IsBorderless="True"
+											AcceptsReturn="True"
+											ScrollViewer.VerticalScrollBarVisibility="Auto"
+											Text="{Binding OnlyFilterExtensions}"
+											Visibility="{Binding IsOnlyFilterMode}"
+											VerticalContentAlignment="Top"
+											Height="50" Width="150"/>
+							<se:StswTextBox se:StswControl.IsBorderless="True"
+											AcceptsReturn="True"
+											ScrollViewer.VerticalScrollBarVisibility="Auto"
+											Text="{Binding ExcludedFilterExtensions}"
+											Visibility="{Binding IsExcludedFilterMode}"
+											VerticalContentAlignment="Top"
+											Height="50" Width="150"/>
 						</se:StswSubDrop>
 						<se:StswLabel Content="File list" IconData="{x:Static se:StswIcons.File}"/>
 					</DockPanel>
@@ -72,9 +79,9 @@
 			<se:StswGridSplitter Grid.Row="1" Background="{DynamicResource StswBorder.Static.Border}" ResizeDirection="Rows"/>
 
 			<!-- separator -->
-			<se:StswGroupBox Grid.Row="2" BorderThickness="0 1 0 0" CornerClipping="False" CornerRadius="0">
+			<se:StswGroupBox Grid.Row="2" se:StswControl.IsBorderless="True" Padding="0" SeparatorThickness="1">
 				<se:StswGroupBox.Header>
-					<DockPanel>
+					<DockPanel Margin="3">
 						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding ClearSeparatorCommand}" IconData="{x:Static se:StswIcons.Broom}" IconFill="{DynamicResource StswColor.Negative}"/>
 						<se:StswLabel Content="Separator" IconData="{x:Static se:StswIcons.ArrowSplitHorizontal}"/>
 					</DockPanel>
@@ -94,9 +101,9 @@
 		<se:StswGridSplitter Grid.Column="1" Background="{DynamicResource StswBorder.Static.Border}" ResizeDirection="Columns"/>
 
 		<!-- output -->
-		<se:StswGroupBox Grid.Column="2" BorderThickness="0 1 0 0" CornerClipping="False" CornerRadius="0">
+		<se:StswGroupBox Grid.Column="2" se:StswControl.IsBorderless="True" Padding="0" SeparatorThickness="1">
 			<se:StswGroupBox.Header>
-				<DockPanel>
+				<DockPanel Margin="3">
 					<se:StswSubButton DockPanel.Dock="Right" Command="{Binding SaveOutputCommand}" IconData="{x:Static se:StswIcons.ContentSave}" IconFill="{DynamicResource StswColor.Modify}"/>
 					<se:StswSubButton DockPanel.Dock="Right" Command="{Binding CopyOutputCommand}" IconData="{x:Static se:StswIcons.ContentCopy}" IconFill="{DynamicResource StswColor.Neutral}"/>
 					<se:StswSubCheck DockPanel.Dock="Right" IsChecked="{Binding IsOutputReadOnly}" IconChecked="{x:Static se:StswIcons.CheckboxBlankOutline}" IconUnchecked="{x:Static se:StswIcons.CheckboxMarkedOutline}"/>
