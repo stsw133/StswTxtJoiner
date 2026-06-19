@@ -7,6 +7,7 @@ namespace StswTxtJoiner;
 public class AppSettings
 {
 	public const string DefaultOnlyFilterExtensions = ".md, .json, .txt";
+	public const int DefaultOutputPreviewCharacterLimit = 100000;
 
 	static readonly JsonSerializerOptions JsonOptions = new()
 	{
@@ -17,6 +18,7 @@ public class AppSettings
 	public string OnlyFilterExtensions { get; set; } = DefaultOnlyFilterExtensions;
 	public string ExcludedFilterExtensions { get; set; } = string.Empty;
 	public FileFilterMode FilterMode { get; set; } = FileFilterMode.Only;
+	public int OutputPreviewCharacterLimit { get; set; } = DefaultOutputPreviewCharacterLimit;
 
 	public static string UserSettingsPath => Path.Combine(
 		Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -36,6 +38,8 @@ public class AppSettings
 		settings.ExcludedFilterExtensions = App.Configuration[nameof(ExcludedFilterExtensions)] ?? settings.ExcludedFilterExtensions;
 		if (Enum.TryParse<FileFilterMode>(App.Configuration[nameof(FilterMode)], true, out var filterMode))
 			settings.FilterMode = filterMode;
+		if (int.TryParse(App.Configuration[nameof(OutputPreviewCharacterLimit)], out var outputPreviewCharacterLimit))
+			settings.OutputPreviewCharacterLimit = outputPreviewCharacterLimit;
 
 		return settings;
 	}

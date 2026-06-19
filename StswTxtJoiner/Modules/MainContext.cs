@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
 
@@ -12,6 +13,8 @@ public partial class MainContext : StswObservableObject
 	[StswObservableProperty] string _separatorText = string.Empty;
 	[StswObservableProperty] string _outputText = string.Empty;
 	[StswObservableProperty] bool _isOutputReadOnly = true;
+	[StswObservableProperty] bool _isSeparatorBeforeFile;
+	[StswObservableProperty] int _outputPreviewCharacterLimit = AppSettings.DefaultOutputPreviewCharacterLimit;
 	[StswObservableProperty] string _onlyFilterExtensions = AppSettings.DefaultOnlyFilterExtensions;
 	[StswObservableProperty] string _excludedFilterExtensions = string.Empty;
 	[StswObservableProperty] FileFilterMode _filterMode = FileFilterMode.Only;
@@ -24,8 +27,23 @@ public partial class MainContext : StswObservableObject
 		OnlyFilterExtensions = string.IsNullOrWhiteSpace(settings.OnlyFilterExtensions) ? AppSettings.DefaultOnlyFilterExtensions : settings.OnlyFilterExtensions;
 		ExcludedFilterExtensions = settings.ExcludedFilterExtensions ?? string.Empty;
 		FilterMode = settings.FilterMode;
+		OutputPreviewCharacterLimit = settings.OutputPreviewCharacterLimit;
 		_isLoadingSettings = false;
+
+		FileList.CollectionChanged += FileList_CollectionChanged;
 	}
+
+	public string FileListHeader => $"File list ({FileList.Count})";
+
+	public string SeparatorHeader => $"Separator ({SeparatorText.Length})";
+
+	public string OutputHeader => $"Output ({OutputText.Length})";
+
+	public bool IsOutputTooLarge => OutputText.Length > OutputPreviewCharacterLimit;
+
+	public bool IsOutputTextVisible => !IsOutputTooLarge;
+
+	void FileList_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs eventArgs) => OnPropertyChanged(nameof(FileListHeader));
 
 	public bool IsOnlyFilterMode
 	{
@@ -50,6 +68,22 @@ public partial class MainContext : StswObservableObject
 	partial void OnOnlyFilterExtensionsChanged(string oldValue, string newValue) => SaveSettings();
 
 	partial void OnExcludedFilterExtensionsChanged(string oldValue, string newValue) => SaveSettings();
+
+	partial void OnSeparatorTextChanged(string oldValue, string newValue) => OnPropertyChanged(nameof(SeparatorHeader));
+
+	partial void OnOutputTextChanged(string oldValue, string newValue)
+	{
+		OnPropertyChanged(nameof(OutputHeader));
+		OnPropertyChanged(nameof(IsOutputTooLarge));
+		OnPropertyChanged(nameof(IsOutputTextVisible));
+	}
+
+	partial void OnOutputPreviewCharacterLimitChanged(int oldValue, int newValue)
+	{
+		OnPropertyChanged(nameof(IsOutputTooLarge));
+		OnPropertyChanged(nameof(IsOutputTextVisible));
+		SaveSettings();
+	}
 
 	partial void OnFilterModeChanged(FileFilterMode oldValue, FileFilterMode newValue)
 	{
@@ -76,7 +110,10 @@ public partial class MainContext : StswObservableObject
 	void DragFilesOver(DragEventArgs eventArgs)
 	{
 		var containsFiles = eventArgs.Data.GetDataPresent(DataFormats.FileDrop);
-		eventArgs.Effects = containsFiles ? DragDropEffects.Copy : DragDropEffects.None;
+		if (!containsFiles)
+			return;
+
+		eventArgs.Effects = DragDropEffects.Copy;
 		eventArgs.Handled = true;
 	}
 
@@ -181,6 +218,7 @@ public partial class MainContext : StswObservableObject
 			OnlyFilterExtensions = OnlyFilterExtensions,
 			ExcludedFilterExtensions = ExcludedFilterExtensions,
 			FilterMode = FilterMode,
+			OutputPreviewCharacterLimit = OutputPreviewCharacterLimit,
 		}.Save();
 	}
 
@@ -205,8 +243,22 @@ public partial class MainContext : StswObservableObject
 	[StswCommand]
 	void ConvertFiles()
 	{
-		var fileContents = FileList.Select(f => File.ReadAllText(f.FilePath));
-		OutputText = string.Join(SeparatorText, fileContents);
+		var fileContents = FileList.Select((file, index) => new
+		{
+			Content = File.ReadAllText(file.FilePath),
+			Separator = BuildSeparator(file, index),
+		});
+
+		OutputText = IsSeparatorBeforeFile
+			? string.Concat(fileContents.Select(x => $"{x.Separator}{x.Content}"))
+			: string.Join(string.Empty, fileContents.Select((x, index) => index == 0 ? x.Content : $"{x.Separator}{x.Content}"));
+	}
+
+	string BuildSeparator(FileInfoModel file, int index)
+	{
+		return SeparatorText
+			.Replace("{fileName}", file.FileName)
+			.Replace("{fileNo}", (index + 1).ToString());
 	}
 
 	[StswCommand]

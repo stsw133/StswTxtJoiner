@@ -12,18 +12,22 @@
 		<local:MainContext/>
 	</se:StswWindow.DataContext>
 
+	<se:StswWindow.Resources>
+		<BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+	</se:StswWindow.Resources>
+
 	<Grid Margin="0 1 0 0">
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="*" MinWidth="10"/>
 			<ColumnDefinition Width="1"/>
-			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="*" MinWidth="10"/>
 		</Grid.ColumnDefinitions>
 
 		<se:StswSeparator Grid.ColumnSpan="3" BorderThickness="1" Margin="0 -1 0 0" VerticalAlignment="Top"/>
 
 		<Grid>
 			<Grid.RowDefinitions>
-				<RowDefinition Height="*"/>
+				<RowDefinition Height="*" MinHeight="10"/>
 				<RowDefinition Height="1"/>
 				<RowDefinition Height="150"/>
 			</Grid.RowDefinitions>
@@ -56,7 +60,7 @@
 											VerticalContentAlignment="Top"
 											Height="50" Width="150"/>
 						</se:StswSubDrop>
-						<se:StswLabel Content="File list" IconData="{x:Static se:StswIcons.File}"/>
+						<se:StswLabel Content="{Binding FileListHeader}" IconData="{x:Static se:StswIcons.File}"/>
 					</DockPanel>
 				</se:StswGroupBox.Header>
 
@@ -83,7 +87,14 @@
 				<se:StswGroupBox.Header>
 					<DockPanel Margin="3">
 						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding ClearSeparatorCommand}" IconData="{x:Static se:StswIcons.Broom}" IconFill="{DynamicResource StswColor.Negative}"/>
-						<se:StswLabel Content="Separator" IconData="{x:Static se:StswIcons.ArrowSplitHorizontal}"/>
+						<se:StswSubDrop DockPanel.Dock="Right" IconData="{x:Static se:StswIcons.Filter}" IconFill="{DynamicResource StswColor.Neutral}">
+							<StackPanel Margin="6">
+								<se:StswLabel Content="{}{fileName} - file name"/>
+								<se:StswLabel Content="{}{fileNo} - file number"/>
+							</StackPanel>
+						</se:StswSubDrop>
+						<se:StswSubCheck DockPanel.Dock="Right" IsChecked="{Binding IsSeparatorBeforeFile}" IconChecked="{x:Static se:StswIcons.CheckboxMarkedOutline}" IconUnchecked="{x:Static se:StswIcons.CheckboxBlankOutline}"/>
+						<se:StswLabel Content="{Binding SeparatorHeader}" IconData="{x:Static se:StswIcons.ArrowSplitHorizontal}"/>
 					</DockPanel>
 				</se:StswGroupBox.Header>
 
@@ -107,19 +118,32 @@
 					<se:StswSubButton DockPanel.Dock="Right" Command="{Binding SaveOutputCommand}" IconData="{x:Static se:StswIcons.ContentSave}" IconFill="{DynamicResource StswColor.Modify}"/>
 					<se:StswSubButton DockPanel.Dock="Right" Command="{Binding CopyOutputCommand}" IconData="{x:Static se:StswIcons.ContentCopy}" IconFill="{DynamicResource StswColor.Neutral}"/>
 					<se:StswSubCheck DockPanel.Dock="Right" IsChecked="{Binding IsOutputReadOnly}" IconChecked="{x:Static se:StswIcons.CheckboxBlankOutline}" IconUnchecked="{x:Static se:StswIcons.CheckboxMarkedOutline}"/>
-					<se:StswLabel Content="Output" IconData="{x:Static se:StswIcons.Console}"/>
+					<se:StswSubDrop DockPanel.Dock="Right" IconData="{x:Static se:StswIcons.Filter}" IconFill="{DynamicResource StswColor.Neutral}">
+						<StackPanel Margin="6">
+							<se:StswLabel Content="Output preview character limit"/>
+							<se:StswTextBox Width="150" Text="{Binding OutputPreviewCharacterLimit}"/>
+						</StackPanel>
+					</se:StswSubDrop>
+					<se:StswLabel Content="{Binding OutputHeader}" IconData="{x:Static se:StswIcons.Console}"/>
 				</DockPanel>
 			</se:StswGroupBox.Header>
 
-			<se:StswTextBox se:StswControl.IsBorderless="True"
-							AcceptsReturn="True" AcceptsTab="True"
-							IsReadOnly="{Binding IsOutputReadOnly}"
-							Text="{Binding OutputText}"
-							HorizontalAlignment="Stretch"
-							HorizontalContentAlignment="Stretch"
-							VerticalAlignment="Stretch"
-							VerticalContentAlignment="Stretch"
-							ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+			<Grid>
+				<se:StswTextBox se:StswControl.IsBorderless="True"
+								AcceptsReturn="True" AcceptsTab="True"
+								IsReadOnly="{Binding IsOutputReadOnly}"
+								Text="{Binding OutputText}"
+								HorizontalAlignment="Stretch"
+								HorizontalContentAlignment="Stretch"
+								VerticalAlignment="Stretch"
+								VerticalContentAlignment="Stretch"
+								ScrollViewer.VerticalScrollBarVisibility="Auto"
+								Visibility="{Binding IsOutputTextVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
+				<se:StswLabel Content="Output too large to view"
+							  HorizontalAlignment="Center"
+							  VerticalAlignment="Center"
+							  Visibility="{Binding IsOutputTooLarge, Converter={StaticResource BoolToVisibilityConverter}}"/>
+			</Grid>
 		</se:StswGroupBox>
 	</Grid>
 </se:StswWindow>
