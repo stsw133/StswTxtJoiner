@@ -43,6 +43,16 @@ public partial class MainContext : StswObservableObject
 
 	public bool IsOutputTextVisible => !IsOutputTooLarge;
 
+	public string OutputPreviewText
+	{
+		get => IsOutputTooLarge ? string.Empty : OutputText;
+		set
+		{
+			if (!IsOutputTooLarge)
+				OutputText = value;
+		}
+	}
+
 	void FileList_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs eventArgs) => OnPropertyChanged(nameof(FileListHeader));
 
 	public bool IsOnlyFilterMode
@@ -76,12 +86,14 @@ public partial class MainContext : StswObservableObject
 		OnPropertyChanged(nameof(OutputHeader));
 		OnPropertyChanged(nameof(IsOutputTooLarge));
 		OnPropertyChanged(nameof(IsOutputTextVisible));
+		OnPropertyChanged(nameof(OutputPreviewText));
 	}
 
 	partial void OnOutputPreviewCharacterLimitChanged(int oldValue, int newValue)
 	{
 		OnPropertyChanged(nameof(IsOutputTooLarge));
 		OnPropertyChanged(nameof(IsOutputTextVisible));
+		OnPropertyChanged(nameof(OutputPreviewText));
 		SaveSettings();
 	}
 

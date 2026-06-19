@@ -132,7 +132,7 @@
 				<se:StswTextBox se:StswControl.IsBorderless="True"
 								AcceptsReturn="True" AcceptsTab="True"
 								IsReadOnly="{Binding IsOutputReadOnly}"
-								Text="{Binding OutputText}"
+								Text="{Binding OutputPreviewText}"
 								HorizontalAlignment="Stretch"
 								HorizontalContentAlignment="Stretch"
 								VerticalAlignment="Stretch"
