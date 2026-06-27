@@ -43,6 +43,12 @@ public partial class MainContext : StswObservableObject
 
 	public bool IsOutputTextVisible => !IsOutputTooLarge;
 
+	public bool IsOutputEditable
+	{
+		get => !IsOutputReadOnly;
+		set => IsOutputReadOnly = !value;
+	}
+
 	public string OutputPreviewText
 	{
 		get => IsOutputTooLarge ? string.Empty : OutputText;
@@ -80,6 +86,8 @@ public partial class MainContext : StswObservableObject
 	partial void OnExcludedFilterExtensionsChanged(string oldValue, string newValue) => SaveSettings();
 
 	partial void OnSeparatorTextChanged(string oldValue, string newValue) => OnPropertyChanged(nameof(SeparatorHeader));
+
+	partial void OnIsOutputReadOnlyChanged(bool oldValue, bool newValue) => OnPropertyChanged(nameof(IsOutputEditable));
 
 	partial void OnOutputTextChanged(string oldValue, string newValue)
 	{
@@ -255,10 +263,11 @@ public partial class MainContext : StswObservableObject
 	[StswCommand]
 	void ConvertFiles()
 	{
+		var commonPathBase = GetCommonPathBase(FileList.Select(x => x.FilePath));
 		var fileContents = FileList.Select((file, index) => new
 		{
 			Content = File.ReadAllText(file.FilePath),
-			Separator = BuildSeparator(file, index),
+			Separator = BuildSeparator(file, index, commonPathBase),
 		});
 
 		OutputText = IsSeparatorBeforeFile
@@ -266,11 +275,53 @@ public partial class MainContext : StswObservableObject
 			: string.Join(string.Empty, fileContents.Select((x, index) => index == 0 ? x.Content : $"{x.Separator}{x.Content}"));
 	}
 
-	string BuildSeparator(FileInfoModel file, int index)
+	string BuildSeparator(FileInfoModel file, int index, string? commonPathBase)
 	{
 		return SeparatorText
 			.Replace("{fileName}", file.FileName)
-			.Replace("{fileNo}", (index + 1).ToString());
+			.Replace("{fileNo}", (index + 1).ToString())
+			.Replace("{filePath}", file.FilePath)
+			.Replace("{filePathShort}", GetShortFilePath(file.FilePath, commonPathBase));
+	}
+
+	static string GetShortFilePath(string filePath, string? commonPathBase)
+	{
+		if (string.IsNullOrWhiteSpace(commonPathBase))
+			return filePath;
+
+		return Path.GetRelativePath(commonPathBase, filePath);
+	}
+
+	static string? GetCommonPathBase(IEnumerable<string> filePaths)
+	{
+		var directories = filePaths
+			.Select(Path.GetDirectoryName)
+			.Where(x => !string.IsNullOrWhiteSpace(x))
+			.Cast<string>()
+			.ToArray();
+		if (directories.Length == 0)
+			return null;
+
+		var commonDirectory = directories[0];
+		foreach (var directory in directories.Skip(1))
+		{
+			while (!directory.StartsWith(commonDirectory, StringComparison.OrdinalIgnoreCase)
+				|| !IsDirectoryBoundary(directory, commonDirectory.Length))
+			{
+				var parent = Path.GetDirectoryName(commonDirectory);
+				if (string.IsNullOrWhiteSpace(parent) || parent == commonDirectory)
+					return null;
+
+				commonDirectory = parent;
+			}
+		}
+
+		return Path.GetDirectoryName(commonDirectory) ?? commonDirectory;
+	}
+
+	static bool IsDirectoryBoundary(string path, int index)
+	{
+		return path.Length == index || Path.DirectorySeparatorChar == path[index] || Path.AltDirectorySeparatorChar == path[index];
 	}
 
 	[StswCommand]
