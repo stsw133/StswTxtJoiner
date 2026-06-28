@@ -278,7 +278,8 @@ public partial class MainContext : StswObservableObject
 	string BuildSeparator(FileInfoModel file, int index, string? commonPathBase)
 	{
 		return SeparatorText
-			.Replace("{fileName}", file.FileName)
+			.Replace("{fileName}", Path.GetFileNameWithoutExtension(file.FileName))
+			.Replace("{fileExt}", Path.GetExtension(file.FileName).TrimStart('.'))
 			.Replace("{fileNo}", (index + 1).ToString())
 			.Replace("{filePath}", file.FilePath)
 			.Replace("{filePathShort}", GetShortFilePath(file.FilePath, commonPathBase));
