@@ -91,7 +91,8 @@
 						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding ClearSeparatorCommand}" IconData="{x:Static se:StswIcons.Broom}" IconFill="{DynamicResource StswColor.Negative}"/>
 						<se:StswSubDrop DockPanel.Dock="Right" IconData="{x:Static se:StswIcons.HelpBox}" IconFill="{DynamicResource StswColor.Neutral}">
 							<StackPanel Margin="6">
-								<se:StswLabel Content="{}{fileName} - file name"/>
+								<se:StswLabel Content="{}{fileName} - file name without extension"/>
+								<se:StswLabel Content="{}{fileExt} - file extension"/>
 								<se:StswLabel Content="{}{fileNo} - file number"/>
 								<se:StswLabel Content="{}{filePath} - full file path"/>
 								<se:StswLabel Content="{}{filePathShort} - path from common folder"/>
