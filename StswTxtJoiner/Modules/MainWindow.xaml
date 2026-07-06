@@ -12,10 +12,6 @@
 		<local:MainContext/>
 	</se:StswWindow.DataContext>
 
-	<se:StswWindow.Resources>
-		<BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-	</se:StswWindow.Resources>
-
 	<Grid Margin="0 1 0 0">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*" MinWidth="10"/>
@@ -135,7 +131,7 @@
 					<se:StswSubDrop DockPanel.Dock="Right" IconData="{x:Static se:StswIcons.Filter}" IconFill="{DynamicResource StswColor.Neutral}">
 						<StackPanel Margin="6">
 							<se:StswLabel Content="Output preview character limit"/>
-							<se:StswTextBox Width="150" Text="{Binding OutputPreviewCharacterLimit}"/>
+							<se:StswIntegerBox Value="{Binding OutputPreviewCharacterLimit}" Width="150"/>
 						</StackPanel>
 					</se:StswSubDrop>
 					<se:StswLabel Content="{Binding OutputHeader}" IconData="{x:Static se:StswIcons.Console}"/>
@@ -151,13 +147,13 @@
 								HorizontalContentAlignment="Stretch"
 								VerticalAlignment="Stretch"
 								VerticalContentAlignment="Stretch"
+								Visibility="{Binding IsOutputTextVisible}"
 								ScrollViewer.VerticalScrollBarVisibility="Auto"
-								ScrollViewer.HorizontalScrollBarVisibility="Auto"
-								Visibility="{Binding IsOutputTextVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
+								ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
 				<se:StswLabel Content="Output too large to view"
 							  HorizontalAlignment="Center"
 							  VerticalAlignment="Center"
-							  Visibility="{Binding IsOutputTooLarge, Converter={StaticResource BoolToVisibilityConverter}}"/>
+							  Visibility="{Binding IsOutputTooLarge}"/>
 			</Grid>
 		</se:StswGroupBox>
 	</Grid>
