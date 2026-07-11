@@ -1,0 +1,166 @@
+﻿<UserControl x:Class="StswFileJoiner.ImageJoinerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:StswFileJoiner"
+             xmlns:se="clr-namespace:StswExpress.Wpf;assembly=StswExpress.Wpf"
+             mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:ImageJoinerContext}">
+
+	<UserControl.Resources>
+		<BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+	</UserControl.Resources>
+
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*" MinWidth="10"/>
+			<ColumnDefinition Width="1"/>
+			<ColumnDefinition Width="*" MinWidth="10"/>
+		</Grid.ColumnDefinitions>
+
+		<Grid Grid.Column="0">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" MinHeight="10"/>
+				<RowDefinition Height="1"/>
+				<RowDefinition Height="220"/>
+			</Grid.RowDefinitions>
+
+			<!-- file list -->
+			<se:StswGroupBox se:StswControl.IsBorderless="True" Padding="0" SeparatorThickness="1">
+				<se:StswGroupBox.Header>
+					<DockPanel Margin="3">
+						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding JoinImagesCommand}" IconData="{x:Static se:StswIcons.Play}" IconFill="{DynamicResource StswColor.Modify}" ToolTip="Join images"/>
+						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding AddFilesCommand}" IconData="{x:Static se:StswIcons.Plus}" IconFill="{DynamicResource StswColor.Positive}" ToolTip="Add images"/>
+						<se:StswSubButton DockPanel.Dock="Right" Command="{Binding ClearFilesCommand}" IconData="{x:Static se:StswIcons.Broom}" IconFill="{DynamicResource StswColor.Negative}" ToolTip="Clear list"/>
+						<se:StswSubDrop DockPanel.Dock="Right" IconData="{x:Static se:StswIcons.Filter}" IconFill="{DynamicResource StswColor.Neutral}" ToolTip="File filter">
+							<StackPanel Margin="3" Orientation="Horizontal">
+								<se:StswRadioBox Content="Only" IconScale="0.75" IsChecked="{Binding FilterMode, Converter={x:Static se:StswRadioConverter.Instance}, ConverterParameter={x:Static local:FileFilterMode.Only}}" Margin="3"/>
+								<se:StswRadioBox Content="Excluded" IconScale="0.75" IsChecked="{Binding FilterMode, Converter={x:Static se:StswRadioConverter.Instance}, ConverterParameter={x:Static local:FileFilterMode.Excluded}}" Margin="3"/>
+							</StackPanel>
+							<se:StswSeparator BorderThickness="1"/>
+							<se:StswTextBox se:StswControl.IsBorderless="True"
+											AcceptsReturn="True"
+											ScrollViewer.VerticalScrollBarVisibility="Auto"
+											ScrollViewer.HorizontalScrollBarVisibility="Auto"
+											Text="{Binding OnlyFilterExtensions}"
+											Visibility="{Binding FilterMode, Converter={x:Static se:StswCompareConverter.Instance}, ConverterParameter={x:Static local:FileFilterMode.Only}}"
+											VerticalContentAlignment="Top"
+											Height="70" Width="180"/>
+							<se:StswTextBox se:StswControl.IsBorderless="True"
+											AcceptsReturn="True"
+											ScrollViewer.VerticalScrollBarVisibility="Auto"
+											ScrollViewer.HorizontalScrollBarVisibility="Auto"
+											Text="{Binding ExcludedFilterExtensions}"
+											Visibility="{Binding FilterMode, Converter={x:Static se:StswCompareConverter.Instance}, ConverterParameter={x:Static local:FileFilterMode.Excluded}}"
+											VerticalContentAlignment="Top"
+											Height="70" Width="180"/>
+						</se:StswSubDrop>
+						<se:StswLabel Content="{Binding FileListHeader}" IconData="{x:Static se:StswIcons.File}"/>
+					</DockPanel>
+				</se:StswGroupBox.Header>
+
+				<se:StswDragBox se:StswControl.IsBorderless="True"
+								AllowDrop="True"
+								ItemsSource="{Binding FileList}"
+								SelectedItem="{Binding SelectedFileInfo}"
+								SelectedValuePath="FilePath"
+								Drop="{se:StswEventToCommand Command=DropFilesCommand, PassEventArgs=True}"
+								KeyDown="{se:StswEventToCommand Command=ClearFileCommand, CommandParameterBinding={Binding SelectedFileInfo}, AllowedKey=Delete}"
+								PreviewDragOver="{se:StswEventToCommand Command=DragFilesOverCommand, PassEventArgs=True}">
+					<se:StswDragBox.ItemTemplate>
+						<DataTemplate>
+							<se:StswLabel Content="{Binding FileName}" IconSource="{Binding FilePath, Converter={x:Static se:StswPathToIconConverter.Instance}}"/>
+						</DataTemplate>
+					</se:StswDragBox.ItemTemplate>
+				</se:StswDragBox>
+			</se:StswGroupBox>
+
+			<se:StswGridSplitter Grid.Row="1" Background="{DynamicResource StswBorder.Static.Border}" ResizeDirection="Rows"/>
+
+			<!-- join settings -->
+			<se:StswGroupBox Grid.Row="2" se:StswControl.IsBorderless="True" Padding="6" SeparatorThickness="1">
+				<se:StswGroupBox.Header>
+					<DockPanel Margin="3">
+						<se:StswLabel Content="Join settings" IconData="{x:Static se:StswIcons.ArrowSplitHorizontal}"/>
+					</DockPanel>
+				</se:StswGroupBox.Header>
+
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+
+					<se:StswLabel Grid.Row="0" Content="Mode" Margin="3"/>
+					<WrapPanel Grid.Row="0" Grid.Column="1">
+						<se:StswRadioBox Content="Horizontal" IconScale="0.75" IsChecked="{Binding JoinMode, Converter={x:Static se:StswRadioConverter.Instance}, ConverterParameter={x:Static local:ImageJoinMode.Horizontal}}" Margin="3"/>
+						<se:StswRadioBox Content="Vertical" IconScale="0.75" IsChecked="{Binding JoinMode, Converter={x:Static se:StswRadioConverter.Instance}, ConverterParameter={x:Static local:ImageJoinMode.Vertical}}" Margin="3"/>
+						<se:StswRadioBox Content="Grid" IconScale="0.75" IsChecked="{Binding JoinMode, Converter={x:Static se:StswRadioConverter.Instance}, ConverterParameter={x:Static local:ImageJoinMode.Grid}}" Margin="3"/>
+						<se:StswRadioBox Content="Overlay" IconScale="0.75" IsChecked="{Binding JoinMode, Converter={x:Static se:StswRadioConverter.Instance}, ConverterParameter={x:Static local:ImageJoinMode.Overlay}}" Margin="3"/>
+					</WrapPanel>
+
+					<se:StswLabel Grid.Row="1" Content="Spacing (px)" Margin="3"/>
+					<se:StswIntegerBox Grid.Row="1" Grid.Column="1" Format="N0" Value="{Binding Spacing}" Width="120" HorizontalAlignment="Left" Margin="3"/>
+
+					<se:StswLabel Grid.Row="2" Content="Grid defined by" Margin="3" Visibility="{Binding IsGridMode, Converter={StaticResource BoolToVisibilityConverter}}"/>
+					<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Visibility="{Binding IsGridMode, Converter={StaticResource BoolToVisibilityConverter}}">
+						<se:StswRadioBox Content="Columns" IconScale="0.75" IsChecked="{Binding GridDefinitionMode, Converter={x:Static se:StswRadioConverter.Instance}, ConverterParameter={x:Static local:ImageGridDefinitionMode.Columns}}" Margin="3"/>
+						<se:StswRadioBox Content="Rows" IconScale="0.75" IsChecked="{Binding GridDefinitionMode, Converter={x:Static se:StswRadioConverter.Instance}, ConverterParameter={x:Static local:ImageGridDefinitionMode.Rows}}" Margin="3"/>
+					</StackPanel>
+
+					<se:StswLabel Grid.Row="3" Content="Grid size" Margin="3" Visibility="{Binding IsGridMode, Converter={StaticResource BoolToVisibilityConverter}}"/>
+					<se:StswIntegerBox Grid.Row="3" Grid.Column="1" Value="{Binding GridSize}" Width="120" HorizontalAlignment="Left" Margin="3" Visibility="{Binding IsGridMode, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+					<se:StswText Grid.Row="4" Grid.ColumnSpan="2" Margin="3,8,3,3" TextWrapping="Wrap" Opacity="0.7"
+							     Text="Images are centered on the secondary axis or inside grid cells. A grid fills across columns or down rows according to the selected definition. In Overlay mode, later items are drawn on top and spacing is ignored."/>
+				</Grid>
+			</se:StswGroupBox>
+		</Grid>
+
+		<se:StswGridSplitter Grid.Column="1" Background="{DynamicResource StswBorder.Static.Border}" ResizeDirection="Columns"/>
+
+		<!-- output -->
+		<se:StswGroupBox Grid.Column="2" se:StswControl.IsBorderless="True" Padding="0" SeparatorThickness="1">
+			<se:StswGroupBox.Header>
+				<DockPanel Margin="3">
+					<se:StswSubButton DockPanel.Dock="Right" Command="{Binding SaveOutputCommand}" IconData="{x:Static se:StswIcons.ContentSave}" IconFill="{DynamicResource StswColor.Modify}" ToolTip="Save output as PNG"/>
+					<se:StswSubDrop DockPanel.Dock="Right" IconData="{x:Static se:StswIcons.Filter}" IconFill="{DynamicResource StswColor.Neutral}" ToolTip="Preview filter">
+						<StackPanel Margin="6">
+							<se:StswLabel Content="Output preview pixel limit"/>
+							<se:StswIntegerBox Value="{Binding OutputPreviewPixelLimit}" Width="170"/>
+							<TextBlock Margin="3" TextWrapping="Wrap" Width="170" Opacity="0.7" Text="The image can still be saved when its total pixel count exceeds this limit."/>
+						</StackPanel>
+					</se:StswSubDrop>
+					<se:StswLabel Content="{Binding OutputHeader}" IconData="{x:Static se:StswIcons.Image}"/>
+				</DockPanel>
+			</se:StswGroupBox.Header>
+
+			<Grid>
+				<se:StswScrollView HorizontalScrollBarVisibility="Auto"
+							       VerticalScrollBarVisibility="Auto"
+							       Visibility="{Binding IsOutputPreviewVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+					<Image Source="{Binding OutputPreviewImage}"
+						   Stretch="None"
+						   HorizontalAlignment="Center"
+						   VerticalAlignment="Center"
+						   SnapsToDevicePixels="True"/>
+				</se:StswScrollView>
+				<se:StswText Text="{Binding OutputMessage}"
+						     TextWrapping="Wrap"
+						     TextAlignment="Center"
+						     HorizontalAlignment="Center"
+						     VerticalAlignment="Center"
+						     MaxWidth="420"
+						     Margin="20"
+						     Visibility="{Binding IsOutputMessageVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
+			</Grid>
+		</se:StswGroupBox>
+	</Grid>
+</UserControl>

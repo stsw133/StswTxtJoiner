@@ -2,5 +2,5 @@
   <Folder Name="/Solution Items/">
     <File Path="README.md" />
   </Folder>
-  <Project Path="StswTxtJoiner/StswTxtJoiner.csproj" />
+  <Project Path="StswFileJoiner/StswFileJoiner.csproj" />
 </Solution>

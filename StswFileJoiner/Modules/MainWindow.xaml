@@ -1,0 +1,26 @@
+﻿<se:StswWindow x:Class="StswFileJoiner.MainWindow"
+               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+               xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+               xmlns:local="clr-namespace:StswFileJoiner"
+               xmlns:se="clr-namespace:StswExpress.Wpf;assembly=StswExpress.Wpf"
+               mc:Ignorable="d" Height="600" Width="1000" WindowStartupLocation="CenterScreen"
+               Title="{x:Static se:StswFnUI.AppNameAndVersion}" Icon="/Resources/icon.ico">
+
+	<se:StswTabControl BorderThickness="0 1 0 0" Padding="0">
+		<se:StswTabItem>
+			<se:StswTabItem.Header>
+				<se:StswLabel Content="Image" IconData="{x:Static se:StswIcons.Image}"/>
+			</se:StswTabItem.Header>
+			<local:ImageJoinerContext/>
+		</se:StswTabItem>
+
+		<se:StswTabItem>
+			<se:StswTabItem.Header>
+				<se:StswLabel Content="Text" IconData="{x:Static se:StswIcons.Text}"/>
+			</se:StswTabItem.Header>
+			<local:TextJoinerContext/>
+		</se:StswTabItem>
+	</se:StswTabControl>
+</se:StswWindow>

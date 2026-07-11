@@ -9,7 +9,7 @@
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
     <Company></Company>
     <PackageIcon>icon.ico</PackageIcon>
-    <Title>Txt Joiner</Title>
+    <Title>File Joiner</Title>
     <Authors>Karol Staszewski</Authors>
     <Version>1.0</Version>
   </PropertyGroup>

@@ -1,4 +1,4 @@
-﻿namespace StswTxtJoiner;
+﻿namespace StswFileJoiner;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml

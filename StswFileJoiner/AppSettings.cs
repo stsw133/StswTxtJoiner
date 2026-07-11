@@ -2,12 +2,14 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace StswTxtJoiner;
+namespace StswFileJoiner;
 
 public class AppSettings
 {
 	public const string DefaultOnlyFilterExtensions = ".md, .json, .txt";
 	public const int DefaultOutputPreviewCharacterLimit = 100000;
+	public const string DefaultImageOnlyFilterExtensions = ".png, .jpg, .jpeg, .bmp, .gif, .tif, .tiff, .wdp, .jxr";
+	public const int DefaultImageOutputPreviewPixelLimit = 16_000_000;
 
 	static readonly JsonSerializerOptions JsonOptions = new()
 	{
@@ -20,9 +22,18 @@ public class AppSettings
 	public FileFilterMode FilterMode { get; set; } = FileFilterMode.Only;
 	public int OutputPreviewCharacterLimit { get; set; } = DefaultOutputPreviewCharacterLimit;
 
+	public string ImageOnlyFilterExtensions { get; set; } = DefaultImageOnlyFilterExtensions;
+	public string ImageExcludedFilterExtensions { get; set; } = string.Empty;
+	public FileFilterMode ImageFilterMode { get; set; } = FileFilterMode.Only;
+	public ImageJoinMode ImageJoinMode { get; set; } = global::StswFileJoiner.ImageJoinMode.Horizontal;
+	public ImageGridDefinitionMode ImageGridDefinitionMode { get; set; } = global::StswFileJoiner.ImageGridDefinitionMode.Columns;
+	public int ImageGridSize { get; set; } = 2;
+	public int ImageSpacing { get; set; }
+	public int ImageOutputPreviewPixelLimit { get; set; } = DefaultImageOutputPreviewPixelLimit;
+
 	public static string UserSettingsPath => Path.Combine(
 		Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-		nameof(StswTxtJoiner),
+		nameof(StswFileJoiner),
 		"appsettings.json"
 	);
 
@@ -40,6 +51,21 @@ public class AppSettings
 			settings.FilterMode = filterMode;
 		if (int.TryParse(App.Configuration[nameof(OutputPreviewCharacterLimit)], out var outputPreviewCharacterLimit))
 			settings.OutputPreviewCharacterLimit = outputPreviewCharacterLimit;
+
+		settings.ImageOnlyFilterExtensions = App.Configuration[nameof(ImageOnlyFilterExtensions)] ?? settings.ImageOnlyFilterExtensions;
+		settings.ImageExcludedFilterExtensions = App.Configuration[nameof(ImageExcludedFilterExtensions)] ?? settings.ImageExcludedFilterExtensions;
+		if (Enum.TryParse<FileFilterMode>(App.Configuration[nameof(ImageFilterMode)], true, out var imageFilterMode))
+			settings.ImageFilterMode = imageFilterMode;
+		if (Enum.TryParse<ImageJoinMode>(App.Configuration[nameof(ImageJoinMode)], true, out var imageJoinMode))
+			settings.ImageJoinMode = imageJoinMode;
+		if (Enum.TryParse<ImageGridDefinitionMode>(App.Configuration[nameof(ImageGridDefinitionMode)], true, out var imageGridDefinitionMode))
+			settings.ImageGridDefinitionMode = imageGridDefinitionMode;
+		if (int.TryParse(App.Configuration[nameof(ImageGridSize)], out var imageGridSize))
+			settings.ImageGridSize = imageGridSize;
+		if (int.TryParse(App.Configuration[nameof(ImageSpacing)], out var imageSpacing))
+			settings.ImageSpacing = imageSpacing;
+		if (int.TryParse(App.Configuration[nameof(ImageOutputPreviewPixelLimit)], out var imageOutputPreviewPixelLimit))
+			settings.ImageOutputPreviewPixelLimit = imageOutputPreviewPixelLimit;
 
 		return settings;
 	}

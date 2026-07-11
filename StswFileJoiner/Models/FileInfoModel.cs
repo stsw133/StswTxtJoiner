@@ -1,4 +1,4 @@
-﻿namespace StswTxtJoiner;
+﻿namespace StswFileJoiner;
 
 public class FileInfoModel
 {

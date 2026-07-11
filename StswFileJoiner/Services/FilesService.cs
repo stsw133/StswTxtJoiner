@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 
-namespace StswTxtJoiner;
+namespace StswFileJoiner;
 
 public class FilesService
 {

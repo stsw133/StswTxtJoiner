@@ -4,15 +4,15 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
 
-namespace StswTxtJoiner;
+namespace StswFileJoiner;
 
-public partial class MainContext : StswObservableObject
+public partial class TextJoinerContext : StswObservableObject
 {
 	[StswObservableProperty] ObservableCollection<FileInfoModel> _fileList = [];
 	[StswObservableProperty] FileInfoModel? _selectedFileInfo;
 	[StswObservableProperty] string _separatorText = string.Empty;
 	[StswObservableProperty] string _outputText = string.Empty;
-	[StswObservableProperty] bool _isOutputReadOnly = true;
+	[StswObservableProperty] bool _isOutputEditable;
 	[StswObservableProperty] bool _isSeparatorBeforeFile;
 	[StswObservableProperty] int _outputPreviewCharacterLimit = AppSettings.DefaultOutputPreviewCharacterLimit;
 	[StswObservableProperty] string _onlyFilterExtensions = AppSettings.DefaultOnlyFilterExtensions;
@@ -20,7 +20,7 @@ public partial class MainContext : StswObservableObject
 	[StswObservableProperty] FileFilterMode _filterMode = FileFilterMode.Only;
 	bool _isLoadingSettings;
 
-	public MainContext()
+	public TextJoinerContext()
 	{
 		_isLoadingSettings = true;
 		var settings = AppSettings.Load();
@@ -43,12 +43,6 @@ public partial class MainContext : StswObservableObject
 
 	public bool IsOutputTextVisible => !IsOutputTooLarge;
 
-	public bool IsOutputEditable
-	{
-		get => !IsOutputReadOnly;
-		set => IsOutputReadOnly = !value;
-	}
-
 	public string OutputPreviewText
 	{
 		get => IsOutputTooLarge ? string.Empty : OutputText;
@@ -61,33 +55,11 @@ public partial class MainContext : StswObservableObject
 
 	void FileList_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs eventArgs) => OnPropertyChanged(nameof(FileListHeader));
 
-	public bool IsOnlyFilterMode
-	{
-		get => FilterMode == FileFilterMode.Only;
-		set
-		{
-			if (value)
-				FilterMode = FileFilterMode.Only;
-		}
-	}
-
-	public bool IsExcludedFilterMode
-	{
-		get => FilterMode == FileFilterMode.Excluded;
-		set
-		{
-			if (value)
-				FilterMode = FileFilterMode.Excluded;
-		}
-	}
-
 	partial void OnOnlyFilterExtensionsChanged(string oldValue, string newValue) => SaveSettings();
 
 	partial void OnExcludedFilterExtensionsChanged(string oldValue, string newValue) => SaveSettings();
 
 	partial void OnSeparatorTextChanged(string oldValue, string newValue) => OnPropertyChanged(nameof(SeparatorHeader));
-
-	partial void OnIsOutputReadOnlyChanged(bool oldValue, bool newValue) => OnPropertyChanged(nameof(IsOutputEditable));
 
 	partial void OnOutputTextChanged(string oldValue, string newValue)
 	{
@@ -107,8 +79,6 @@ public partial class MainContext : StswObservableObject
 
 	partial void OnFilterModeChanged(FileFilterMode oldValue, FileFilterMode newValue)
 	{
-		OnPropertyChanged(nameof(IsOnlyFilterMode));
-		OnPropertyChanged(nameof(IsExcludedFilterMode));
 		SaveSettings();
 	}
 
@@ -170,10 +140,8 @@ public partial class MainContext : StswObservableObject
 			if (File.Exists(path))
 				yield return path;
 			else if (Directory.Exists(path))
-			{
 				foreach (var fileName in EnumerateFilesSafely(path))
 					yield return fileName;
-			}
 		}
 	}
 
@@ -184,7 +152,7 @@ public partial class MainContext : StswObservableObject
 
 		try
 		{
-			files = Directory.EnumerateFiles(directory).ToArray();
+			files = [.. Directory.EnumerateFiles(directory)];
 		}
 		catch (Exception) when (IsFileSystemEnumerationException())
 		{
@@ -195,15 +163,15 @@ public partial class MainContext : StswObservableObject
 
 		try
 		{
-			directories = Directory.EnumerateDirectories(directory).ToArray();
+			directories = [.. Directory.EnumerateDirectories(directory)];
 		}
 		catch (Exception) when (IsFileSystemEnumerationException())
 		{
 		}
 
 		foreach (var subdirectory in directories)
-		foreach (var file in EnumerateFilesSafely(subdirectory))
-			yield return file;
+			foreach (var file in EnumerateFilesSafely(subdirectory))
+				yield return file;
 	}
 
 	static bool IsFileSystemEnumerationException() => true;
@@ -233,13 +201,12 @@ public partial class MainContext : StswObservableObject
 		if (_isLoadingSettings)
 			return;
 
-		new AppSettings
-		{
-			OnlyFilterExtensions = OnlyFilterExtensions,
-			ExcludedFilterExtensions = ExcludedFilterExtensions,
-			FilterMode = FilterMode,
-			OutputPreviewCharacterLimit = OutputPreviewCharacterLimit,
-		}.Save();
+		var settings = AppSettings.Load();
+		settings.OnlyFilterExtensions = OnlyFilterExtensions;
+		settings.ExcludedFilterExtensions = ExcludedFilterExtensions;
+		settings.FilterMode = FilterMode;
+		settings.OutputPreviewCharacterLimit = OutputPreviewCharacterLimit;
+		settings.Save();
 	}
 
 	[StswCommand]

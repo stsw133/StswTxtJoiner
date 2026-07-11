@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Extensions.Configuration;
 
-namespace StswTxtJoiner;
+namespace StswFileJoiner;
 
 public partial class App : StswApp
 {
